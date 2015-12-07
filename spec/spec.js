@@ -90,6 +90,15 @@ describe("Given a review with different possible states", function(){
 						reviewstate.fire('data');
 						expect(reviewstate.currentState.name).toBe('initial');
 					});
+
+					it("should notify if any listener has subscribed for state transition", function(){
+						var result = '';
+
+						expect(reviewstate.currentState.name).toBe('initial');
+						reviewstate.subscribe(function(currentStateName){result = currentStateName;});
+						reviewstate.fire('publish');
+						expect(result).toBe('draft');
+					});
 				});
 			});
 		})

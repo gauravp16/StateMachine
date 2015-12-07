@@ -3,6 +3,7 @@ module.exports = (function(){
 	function StateMachine(initialStateName){
 		this.currentState = new State(initialStateName);
 		this.configurations = [];
+		this.listeners = [];
 	}
 
 	StateMachine.prototype = {
@@ -28,6 +29,15 @@ module.exports = (function(){
 			return configuration;
 		},
 
+		subscribe : function(callback){
+			this.listeners.push(callback);
+		},
+
+
+		unsubscribe : function(callback){
+			//this.listeners.push(callback);
+		},
+
 		canFire : function(trigger){
 			var currentStateConfiguration = this.stateConfiguration(this.currentState.name);
 			
@@ -46,6 +56,10 @@ module.exports = (function(){
 				var currentStateConfiguration = this.stateConfiguration(this.currentState.name);
 					
 				this.currentState = currentStateConfiguration.transition(trigger).to;
+
+				for(var i = 0; i< this.listeners.length; i++){
+					this.listeners[i](this.currentState.name);
+				}
 			}
 		}
 	}
