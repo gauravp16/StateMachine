@@ -5,11 +5,12 @@ var reviewstate = module.create('initial');
 reviewstate.configure('initial').allow('publish', 'draft');
 reviewstate.configure('draft').allow('submitted','submitted');
 reviewstate.subscribe(function(currentStateName){console.log(currentStateName);});
+reviewstate.unsubscribe(function(currentStateName){console.log(currentStateName);});
 
-reviewstate.fire('publish');
+/*reviewstate.fire('publish');
 reviewstate.fire('submitted');
 
-console.log(reviewstate.currentState.name);
+console.log(reviewstate.currentState.name);*/
 
 
 

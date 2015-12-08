@@ -35,7 +35,11 @@ module.exports = (function(){
 
 
 		unsubscribe : function(callback){
-			//this.listeners.push(callback);
+			for(var i = 0; i < this.listeners.length; i++){
+				if(callback.toString() === this.listeners[i].toString()){
+					this.listeners.splice(i, 1);
+				}
+			}
 		},
 
 		canFire : function(trigger){
