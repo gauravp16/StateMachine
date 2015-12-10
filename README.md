@@ -1,5 +1,5 @@
 # StateMachine
-Simple state machine implemented in javascript, distributable as node package. Npm registry location
+Simple state machine implemented in javascript, distributable as node package. 
 
 Example usage:
 
