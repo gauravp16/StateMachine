@@ -59,23 +59,6 @@ describe("Given a review with different possible states", function(){
 				expect(config.transitions[0].trigger).toEqual("submitted");
 			});
 
-			it("should allow to subscribe for any state transition", function(){
-				var callback = function(currentStateName){result = currentStateName;};
-				reviewstate.subscribe(callback);
-				expect(reviewstate.listeners[0].toString()).toEqual(callback.toString());
-			});
-
-
-			it("should allow to unsubscribe any subscribed callback", function(){
-				var callbackOne = function(currentStateName){result = currentStateName;};
-				var callbackTwo = function(currentStateName){console.log(currentStateName);};
-				reviewstate.subscribe(callbackOne);
-				reviewstate.subscribe(callbackTwo);
-
-				reviewstate.unsubscribe(callbackTwo);
-				//expect(reviewstate.listeners[0].toString()).toEqual(callback.toString());
-			});
-
 			describe("fire transitions", function(){
 				it("should return false if a transition is not possible to a different state", function(){
 					expect(reviewstate.currentState.name).toBe('initial');
@@ -112,7 +95,7 @@ describe("Given a review with different possible states", function(){
 						var result = '';
 
 						expect(reviewstate.currentState.name).toBe('initial');
-						reviewstate.subscribe(function(currentStateName){result = currentStateName;});
+						reviewstate.on('stateChange', function(stateChange){result = stateChange.currentStateName;});
 						reviewstate.fire('publish');
 						expect(result).toBe('draft');
 					});

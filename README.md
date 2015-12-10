@@ -15,7 +15,10 @@ reviewstate.configure('initial').allow('publish', 'draft');
 reviewstate.configure('draft').allow('submitted','submitted');
 
 //register any callback that is invoked when state transition occurs.<br/>
-reviewstate.subscribe(function(currentStateName){console.log(currentStateName);});
+reviewstate.on('stateChange', function(stateChange){<br/>
+	console.log('Current state : ' +  stateChange.currentStateName);<br/>
+	console.log('Previous state : ' +  stateChange.previousStateName);<br/>
+});
 
 //fire trigger.<br/>
 reviewstate.fire('publish');

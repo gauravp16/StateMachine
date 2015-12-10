@@ -1,72 +1,77 @@
+const EventEmitter = require("events").EventEmitter;
+const util = require("util");
+
 module.exports = (function(){
 
 	function StateMachine(initialStateName){
 		this.currentState = new State(initialStateName);
 		this.configurations = [];
 		this.listeners = [];
+
+		EventEmitter.call(this);
 	}
 
-	StateMachine.prototype = {
-		stateConfiguration : function (stateName){
-			if(this.configurations.length === 0)
-				return null;
+	util.inherits(StateMachine, EventEmitter);
 
-			for(var i =0; i < this.configurations.length; i++){
-				if(this.configurations[i].existsFor(stateName)){
-					return this.configurations[i];
-				}
-			}
-		},
+	StateMachine.prototype.stateConfiguration = function (stateName){
+		if(this.configurations.length === 0)
+			return null;
 
-		configure : function(stateName){
-			var configuration = this.stateConfiguration(stateName);
-			
-			if(configuration === null || configuration === undefined){
-				configuration = new Configuration(new State(stateName));
-				this.configurations.push(configuration);
-			}
-			
-			return configuration;
-		},
-
-		subscribe : function(callback){
-			this.listeners.push(callback);
-		},
-
-
-		unsubscribe : function(callback){
-			for(var i = 0; i < this.listeners.length; i++){
-				if(callback.toString() === this.listeners[i].toString()){
-					this.listeners.splice(i, 1);
-				}
-			}
-		},
-
-		canFire : function(trigger){
-			var currentStateConfiguration = this.stateConfiguration(this.currentState.name);
-			
-			if(currentStateConfiguration === null || currentStateConfiguration === undefined)
-				return false;
-
-			if(currentStateConfiguration.transition(trigger) != null)
-				return true;
-
-			return false;
-		},
-
-		fire : function(trigger){
-			if(this.canFire(trigger)){
-
-				var currentStateConfiguration = this.stateConfiguration(this.currentState.name);
-					
-				this.currentState = currentStateConfiguration.transition(trigger).to;
-
-				for(var i = 0; i< this.listeners.length; i++){
-					this.listeners[i](this.currentState.name);
-				}
+		for(var i =0; i < this.configurations.length; i++){
+			if(this.configurations[i].existsFor(stateName)){
+				return this.configurations[i];
 			}
 		}
-	}
+	};
+
+	StateMachine.prototype.configure = function(stateName){
+		var configuration = this.stateConfiguration(stateName);
+		
+		if(configuration === null || configuration === undefined){
+			configuration = new Configuration(new State(stateName));
+			this.configurations.push(configuration);
+		}
+		
+		return configuration;
+	};
+
+	StateMachine.prototype.subscribe = function(callback){
+		this.listeners.push(callback);
+	};
+
+
+	StateMachine.prototype.unsubscribe = function(callback){
+		for(var i = 0; i < this.listeners.length; i++){
+			if(callback.toString() === this.listeners[i].toString()){
+				this.listeners.splice(i, 1);
+			}
+		}
+	};
+
+	StateMachine.prototype.canFire = function(trigger){
+		var currentStateConfiguration = this.stateConfiguration(this.currentState.name);
+		
+		if(currentStateConfiguration === null || currentStateConfiguration === undefined)
+			return false;
+
+		if(currentStateConfiguration.transition(trigger) != null)
+			return true;
+
+		return false;
+	};
+
+	StateMachine.prototype.fire = function(trigger){
+		if(this.canFire(trigger)){
+
+			var currentStateConfiguration = this.stateConfiguration(this.currentState.name);
+				
+			var previousStateName = this.currentState.name;
+
+			this.currentState = currentStateConfiguration.transition(trigger).to;
+
+			this.emit("stateChange", new StateChange(this.currentState.name, previousStateName));
+		}
+	};
 
 	function State(name){
 		this.name = name;
@@ -115,6 +120,10 @@ module.exports = (function(){
 		}
 	}
 
+	function StateChange(currentStateName, previousStateName){
+		this.currentStateName = currentStateName;
+		this.previousStateName = previousStateName;
+	}
 
 	function create(initialStateName){
 		return new StateMachine(initialStateName);
