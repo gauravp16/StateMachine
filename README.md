@@ -1,5 +1,5 @@
 ## Installation
-npm install --save filelistener
+npm install simplejsstatemachine
 
 ## Usage
 Simple state machine implemented in javascript, distributable as node package.
