@@ -5,7 +5,7 @@ npm install simplejsstatemachine
 Simple state machine implemented in javascript, distributable as node package.
 
 ```javascript
-var module = require('./index.js');
+var module = require('simplejsstatemachine');
 
 //create state machine to represent review state.
 var reviewstate = module.create('initial');
